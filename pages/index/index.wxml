@@ -1,1 +1,4 @@
-<view class="title">hello world!</view>
+<view class='news-wrapper'>
+  <view class="News_title">优达快讯</view>
+  <view class='Pop_News'>热点新闻</view>
+</view>

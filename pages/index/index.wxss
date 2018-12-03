@@ -1,4 +1,5 @@
-.title{
-  margin-top: 300rpx;
-  text-align: center;
+.news-wrapper{
+  padding-top: 174rpx;
+  padding-bottom: 250rpx;
+  background-color: moccasin;
 }
