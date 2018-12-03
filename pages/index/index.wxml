@@ -1,4 +1,52 @@
-<view class='news-wrapper'>
-  <view class="News_title">优达快讯</view>
-  <view class='Pop_News'>热点新闻</view>
+<!--index.wxml-->
+<view class="categories">
+  <!--绑定事件处理函数bindtap-->
+  <!--给选中的组件，即数组当前项的下标与selectedCategory相等的组件，定义样式名category-selected-->
+  <view class='navigation'>
+    <block wx:for="{{categories}}">
+      <view id="{{index}}" bindtap="bindtap" class="category {{index==selectedCategory?'category-selected':''}}">
+        {{item}}
+      </view>
+    </block>
+    <view class='empty_field'></view>
+  </view>
 </view>
+<!--绑定事件处理函数bindchange-->
+<swiper bindchange="bindChange" current='{{selectedCategory}}' style="height:{{swiperHeight}}px">
+  <block wx:for="{{categories}}">
+    <swiper-item class="swiper-items">
+      <view class="header" hidden="{{hideHeader}}">
+        <view>Loading...</view>
+      </view>
+      <scroll-view scroll-x="false" scroll-y="true" class='scroll-views' bindscrolltoupper="refresh">
+        <view class='latest' style="background-image: url({{lastestNews.picture}})" bindtap="readLatest">
+          <view class='empty'>
+            <text class='lastest-tag'>最新</text>
+          </view>
+
+          <view class='latest-news'>
+            <text class='latest-news-title'>{{lastestNews.title}}
+    </text>
+            <view class='latest_publisher_time'>
+              <text class='latest-news-publisher'>{{lastestNews.publisher}}</text>
+              <text class='latest-news-time'>{{lastestNews.time}}</text>
+            </view>
+          </view>
+        </view>
+        <view class='item' wx:for="{{newsList}}">
+          <view class='new-content' bindtap="readDetail" data-id="{{item.id}}">
+            <view class='news'>
+              <text class='news_title'>{{item.title}}</text>
+              <view class='publisher_time'>
+                <text class='publisher'>{{item.publisher}}</text>
+                <text class='time'>{{item.time}}</text>
+              </view>
+            </view>
+            <image class='news_image' src="{{item.picture}}"></image>
+          </view>
+          <view class='border'></view>
+        </view>
+      </scroll-view>
+    </swiper-item>
+  </block>
+</swiper>
