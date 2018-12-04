@@ -1,5 +1,6 @@
 //index.js
-
+var url_main = 'https://test-miniprogram.com'
+//国内，国际，财经，娱乐，军事，体育 和 其他
 Page({
   data: {
     hideHeader: true,
@@ -8,13 +9,13 @@ Page({
     newsList: [],
     // 定义当前页面的初始值0
     currentPage: 0,
-    categories: ['商务', '娱乐', '健康', '科学', '体育', '科技'],
+    categories: ['国内', '国际', '财经', '娱乐', '军事', '体育','其他'],
     // 定义选中标题的初始值0
     selectedCategory: "0",
   },
   // 定义点击标题的事件处理函数，将选中标题的id赋值给selectedCategory
   bindtap: function(e) {
-    console.log(e)
+    //console.log(e)
     this.setData({
       selectedCategory: e.currentTarget.id,
       currentPage: e.currentTarget.id
@@ -31,39 +32,44 @@ Page({
     this.ReloadData()
   },
   ReloadData() {
-    let page = this.data.currentPage
+    let selectedCategory = this.data.selectedCategory
     let url = ''
-    switch (parseInt(page)) {
+    let url_data = url_main +'/api/news/list?type='
+    switch (parseInt(selectedCategory)) {
       case 0:
-        //getBusinessNews()
-        url = 'https://newsapi.org/v2/top-headlines?country=cn&category=business&apiKey=877f47a04bb3499d978b8875bc1ddc91'
+        //获取国内新闻
+        url = url_data+'gn'
         break;
       case 1:
-        //getEntertainmentNews()
-        url = 'https://newsapi.org/v2/top-headlines?country=cn&category=entertainment&apiKey=877f47a04bb3499d978b8875bc1ddc91'
+        //获取国际新闻
+        url = url_data +'gj'
         break;
       case 2:
-        //getHealthNews()
-        url = 'https://newsapi.org/v2/top-headlines?country=cn&category=health&apiKey=877f47a04bb3499d978b8875bc1ddc91'
+        //获取财经新闻
+        url = url_data +'cj'
         break;
       case 3:
-        //getScienceNews()
-        url = 'https://newsapi.org/v2/top-headlines?country=cn&category=science&apiKey=877f47a04bb3499d978b8875bc1ddc91'
+        //获取娱乐新闻
+        url = url_data +'yl'
         break;
       case 4:
-        //getSportsNews()
-        url = 'https://newsapi.org/v2/top-headlines?country=cn&category=sports&apiKey=877f47a04bb3499d978b8875bc1ddc91'
+        //获取军事新闻
+        url = url_data +'js'
         break;
       case 5:
-        //getTechnologyNews()
-        url = 'https://newsapi.org/v2/top-headlines?country=cn&category=technology&apiKey=877f47a04bb3499d978b8875bc1ddc91'
+        //获取体育新闻
+        url = url_data +'ty'
+        break;
+      case 6:
+        //获取其他新闻
+        url = url_data+'other'
         break;
     }
     //获取相应的内容
     wx.request({
       url: url,
       success: res => {
-        //console.log(res)
+        console.log(res)
         this.setNews(res.data)
         this.setData({
           hideHeader: true
@@ -100,13 +106,13 @@ Page({
     this.setData({
       refreshTime: date.toLocaleTimeString()
     })
-    this.getBusinessNews()
+    this.getNationalNews()
   },
-  getBusinessNews() {
+  getNationalNews() {
     wx.request({
-      url: 'https://newsapi.org/v2/top-headlines?country=cn&category=business&apiKey=877f47a04bb3499d978b8875bc1ddc91',
+      url : url_main + '/api/news/list?type=gn',
       success: res => {
-        console.log(res)
+        // console.log(res.data)
         this.setNews(res.data)
         this.setData({
           hideHeader: true
@@ -118,30 +124,23 @@ Page({
     //设置最新的新闻
     let lastestNews = ''
     lastestNews = {
-      id: 0,
-      author: result.articles[0].author,
-      title: result.articles[0].title,
-      picture: result.articles[0].urlToImage,
-      publisher: result.articles[0].source.name,
-      time: result.articles[0].publishedAt,
-      url: result.articles[0].url,
-      description: result.articles[0].description
+      id: result.result[0].id,
+      title: result.result[0].title,
+      picture: result.result[0].firstImage,
+      time: result.result[0].date
     }
     //若文章没有图片则引用本地图片
     if (lastestNews.picture == null)
       lastestNews.picture = "../../images/news.jpeg"
     //设置其他新闻内容列表
     let newsList = []
-    for (let i = 1; i < result.articles.length; i++) {
+    console.log(result.result.length)
+    for (let i = 1; i < result.result.length; i++) {
       newsList.push({
-        id: i,
-        author: result.articles[i].author,
-        title: result.articles[i].title,
-        picture: result.articles[i].urlToImage,
-        publisher: result.articles[i].source.name,
-        time: result.articles[i].publishedAt,
-        url: result.articles[i].url,
-        description: result.articles[i].description
+        id: result.result[i].id,
+        title: result.result[i].title,
+        picture: result.result[i].firstImage,
+        time: result.result[i].date
       })
       //若文章没有图片则引用本地图片
       if (newsList[i - 1].picture == null)
@@ -158,14 +157,14 @@ Page({
     //把对象转成json格式
     let str = JSON.stringify(this.data.newsList[parseInt(e.currentTarget.dataset.id) - 1]);
     wx.navigateTo({
-      url: '/pages/detail/detail?newsList=' + str,
+      //url: '/pages/detail/detail?newsList=' + str,
     })
   },
   //获取最新的新闻内容并跳转
   readLatest: function(e) {
     let str = JSON.stringify(this.data.lastestNews);
     wx.navigateTo({
-      url: '/pages/detail/detail?newsList=' + str,
+      //url: '/pages/detail/detail?newsList=' + str,
     })
   }
 })
